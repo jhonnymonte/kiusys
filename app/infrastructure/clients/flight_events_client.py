@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from app.domain.entities import FlightEvent
 from app.domain.exceptions import (
-    UpstreamApiError,
+    UpstreamAPIError,
     UpstreamUnavailableError,
     UpstreamInvalidPayloadError,
 )
@@ -33,7 +33,7 @@ class FlightEventsClient:
                 "Upstream returned error status",
                 extra={"status_code": exc.response.status_code},
             )
-            raise UpstreamApiError(f"Upstream returned {exc.response.status_code}")
+            raise UpstreamAPIError(f"Upstream returned {exc.response.status_code}")
 
         events = self._parse(response.json())
         logger.info("Flight events fetched", extra={"count": len(events)})

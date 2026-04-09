@@ -1,7 +1,7 @@
 class FlightJourneyError(Exception):
     pass
 
-class UpstreamApiError(FlightJourneyError):
+class UpstreamAPIError(FlightJourneyError):
     pass
 
 class UpstreamUnavailableError(FlightJourneyError):
