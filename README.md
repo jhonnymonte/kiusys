@@ -8,6 +8,6 @@ Bootstrap inicial del proyecto.
 - [x] Fase 3: schemas
 - [x] Fase 4: infraestructura
 - [x] Fase 5: cache
-- [ ] Fase 6: app/api
-- [ ] Fase 7: tests
+- [x] Fase 6: app/api
+- [x ] Fase 7: tests
 - [ ] Fase 8+: docker y hardening
