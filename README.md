@@ -1,59 +1,78 @@
 # Flight Journeys API
 
-API REST para buscar viajes entre ciudades utilizando vuelos directos o con una única conexión, aplicando reglas de negocio sobre tiempos de conexión y duración total.
+REST API to search journeys between cities using direct flights or a single connection, applying business rules for connection times and total duration.
 
 ---
 
 ## Overview
 
-Este servicio permite construir journeys entre un origen y destino a partir de eventos de vuelos obtenidos desde un servicio externo (`/flight-events`).
+This service builds journeys between an origin and destination from flight events fetched from an external service (`/flight-events`).
 
-### Características principales
+### Key features
 
-- Soporte para vuelos directos y vuelos con una conexión
-- Reglas de negocio sobre tiempo máximo de espera y duración total del viaje
-- Cache en memoria con TTL
-- API REST construida con FastAPI
-- Tests unitarios e integración
-- Docker + Docker Compose listos para ejecutar
+- Support for direct flights and one-connection journeys
+- Business rules for max layover and total trip duration
+- In-memory cache with TTL
+- REST API built with FastAPI
+- Unit + integration tests
+- Docker + Docker Compose ready to run
 
 ---
 
-## Arquitectura
+## Configuration
 
-Se implementa una arquitectura basada en Clean / Hexagonal Architecture:
+Create a local `.env` file based on the example:
+
+```bash
+cp .env.example .env
+```
+
+Environment variables:
+
+| Variable | Default | Description |
+|---|---:|---|
+| `FLIGHT_EVENTS_API_URL` | `http://localhost:8001` | Upstream base URL for flight events |
+| `LOG_LEVEL` | `INFO` | Log level |
+| `LOG_FORMAT` | `text` | `text` or `json` |
+| `CACHE_TTL_SECONDS` | `300` | Cache TTL in seconds |
+
+---
+
+## Architecture
+
+The project follows a Clean / Hexagonal Architecture approach:
 
 ```
 app/
-├── domain/         # Entidades + reglas de negocio
-├── application/    # Casos de uso
+├── domain/         # Entities + business rules
+├── application/    # Use cases
 ├── infrastructure/ # HTTP client, cache, logging
 ├── api/            # FastAPI (routes, middleware, handlers)
-└── core/           # Configuración
+└── core/           # Configuration
 ```
 
-### Principios aplicados
+### Applied principles
 
-- Separación de responsabilidades
-- Bajo acoplamiento
-- Alta testabilidad
-- Independencia del framework
+- Separation of concerns
+- Low coupling
+- High testability
+- Framework independence
 
 ---
 
-## Endpoint principal
+## Main endpoint
 
 ### `GET /journeys/search`
 
 **Query params**
 
-| Param | Tipo   | Descripción                    |
-|-------|--------|--------------------------------|
-| date  | string | Fecha de salida (YYYY-MM-DD)   |
-| from  | string | Código de ciudad origen        |
-| to    | string | Código de ciudad destino       |
+| Param | Type   | Description |
+|-------|--------|-------------|
+| date  | string | Departure date (YYYY-MM-DD) |
+| from  | string | Origin city code |
+| to    | string | Destination city code |
 
-**Ejemplo**
+**Example**
 
 ```bash
 curl "http://localhost:8000/journeys/search?date=2025-09-12&from=BUE&to=PMI"
@@ -87,34 +106,34 @@ curl "http://localhost:8000/journeys/search?date=2025-09-12&from=BUE&to=PMI"
 
 ---
 
-## Reglas de negocio
+## Business rules
 
-- Solo se consideran vuelos cuya salida ocurre en la fecha solicitada
-- Se permiten vuelos directos y vuelos con una única conexión
-- Restricciones:
-  - Espera entre vuelos ≤ 4 horas
-  - Duración total ≤ 24 horas
-  - Origen y destino deben ser distintos
+- Only flights departing on the requested date are considered
+- Direct flights and journeys with a single connection are allowed
+- Constraints:
+  - Layover between flights ≤ 4 hours
+  - Total journey duration ≤ 24 hours
+  - Origin and destination must be different
 
 ---
 
 ## Cache
 
-Se implementa cache en memoria con TTL:
+In-memory cache with TTL:
 
-- Evita múltiples llamadas al upstream
-- TTL configurable (`CACHE_TTL_SECONDS`)
-- Protegido contra cache stampede con lock async
+- Avoids repeated upstream calls
+- Configurable TTL (`CACHE_TTL_SECONDS`)
+- Protected against cache stampede with an async lock
 
 ---
 
-## Manejo de errores
+## Error handling
 
-| Error upstream        | Respuesta API         |
-|-----------------------|-----------------------|
-| 5xx                   | 502 Bad Gateway       |
-| Timeout / conexión    | 503 Service Unavailable |
-| Payload inválido      | 502                   |
+| Upstream error | API response |
+|---|---|
+| 5xx | 502 Bad Gateway |
+| Timeout / connection | 503 Service Unavailable |
+| Invalid payload | 502 |
 
 ---
 
@@ -122,13 +141,13 @@ Se implementa cache en memoria con TTL:
 
 ### Unit tests
 
-- Validación de reglas de negocio
+- Business-rule validation
 - Edge cases
 
 ### Integration tests
 
-- Endpoint `/journeys/search`
-- Mock del upstream con `respx`
+- `/journeys/search` endpoint
+- Upstream mocked with `respx`
 
 ```bash
 pytest tests/ -v
@@ -142,7 +161,7 @@ pytest tests/ -v
 docker compose up --build
 ```
 
-Servicios:
+Services:
 
 - API → http://localhost:8000
 - Mock → http://localhost:8001
@@ -153,12 +172,12 @@ curl http://localhost:8000/health
 
 ---
 
-## Desarrollo local
+## Local development
 
 ```bash
-make install   # instalar dependencias
-make run       # levantar API
-make mock      # levantar mock
+make install   # install dependencies
+make run       # start API
+make mock      # start mock
 ```
 
 ---
@@ -173,35 +192,34 @@ make check     # format + lint
 
 ---
 
-## Decisiones de diseño
+## Design decisions
 
-### Sin base de datos
+### No database
 
-No se utiliza base de datos porque el upstream es la fuente de verdad, no se requiere persistencia, y el cache en memoria es suficiente para este caso.
+No database is used because the upstream is the source of truth, persistence is not required, and an in-memory cache is sufficient for this use case.
 
-### Uso de Protocol (ports)
+### Protocols (ports)
 
-Se define una interfaz (`FlightEventsProvider`) que permite desacoplar el cliente HTTP, usar mocks en tests, y aplicar decorators como cache.
+An interface (`FlightEventsProvider`) is defined to decouple the HTTP client, allow mocks in tests, and apply decorators such as caching.
 
-### Cache como decorator
+### Cache as a decorator
 
-El cache se implementa en infraestructura, no contamina el dominio, y permite reemplazo fácil (ej: Redis).
+Caching is implemented in the infrastructure layer, does not leak into the domain, and can be replaced easily (e.g., Redis).
 
-### Validaciones en dominio
+### Domain validations
 
-Las reglas viven en `domain/`, lo que evita duplicación y mantiene consistencia.
+Rules live in `domain/`, avoiding duplication and keeping consistency.
 
-### Identificación de eventos de vuelo
+### Flight event identification
 
-Un evento de vuelo se identifica por su número de vuelo y fecha de operación. Cada evento es independiente y no se requiere deduplicación adicional ya que el upstream es la fuente de verdad.
+A flight event is identified by its flight number and operating date. Each event is independent and no additional deduplication is required since the upstream is the source of truth.
 
 ---
 
-## Mejoras futuras
+## Future improvements
 
-- Soporte para múltiples conexiones (grafo)
-- Cache distribuido (Redis)
+- Support for multiple connections (graph)
+- Distributed cache (Redis)
 - Circuit breaker
-- Métricas (Prometheus)
+- Metrics (Prometheus)
 - Rate limiting
-
