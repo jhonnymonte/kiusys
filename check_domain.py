@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from app.domain.entities import FlightEvent
 from app.domain.rules import is_valid_connection
 
-
 e1 = FlightEvent(
     flight_number="XX1234",
     departure_city="BUE",

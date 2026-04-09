@@ -1,10 +1,10 @@
-import pytest
 import httpx
+import pytest
 from httpx import ASGITransport, AsyncClient
 
-from app.main import app
-from app.infrastructure.clients.flight_events_client import FlightEventsClient
 from app.infrastructure.clients.cached_flight_events_client import CachedFlightEventsClient
+from app.infrastructure.clients.flight_events_client import FlightEventsClient
+from app.main import app
 
 SAMPLE_EVENTS = [
     {

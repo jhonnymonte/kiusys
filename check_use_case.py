@@ -37,11 +37,15 @@ async def main():
 
     print("direct journeys:", len(direct))
     for journey in direct:
-        print("  connections:", journey.connections, "path:", [f.flight_number for f in journey.path])
+        print(
+            "  connections:", journey.connections, "path:", [f.flight_number for f in journey.path]
+        )
 
     print("connected journeys:", len(connected))
     for journey in connected:
-        print("  connections:", journey.connections, "path:", [f.flight_number for f in journey.path])
+        print(
+            "  connections:", journey.connections, "path:", [f.flight_number for f in journey.path]
+        )
 
 
 if __name__ == "__main__":

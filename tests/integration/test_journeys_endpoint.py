@@ -10,9 +10,7 @@ SEARCH = "/journeys/search"
 
 @respx.mock
 async def test_direct_journey(async_client):
-    respx.get(f"{BASE}/flight-events").mock(
-        return_value=Response(200, json=SAMPLE_EVENTS)
-    )
+    respx.get(f"{BASE}/flight-events").mock(return_value=Response(200, json=SAMPLE_EVENTS))
     resp = await async_client.get(
         SEARCH,
         params={"date": "2025-09-12", "from": "BUE", "to": "MAD"},
@@ -26,9 +24,7 @@ async def test_direct_journey(async_client):
 
 @respx.mock
 async def test_connecting_journey(async_client):
-    respx.get(f"{BASE}/flight-events").mock(
-        return_value=Response(200, json=SAMPLE_EVENTS)
-    )
+    respx.get(f"{BASE}/flight-events").mock(return_value=Response(200, json=SAMPLE_EVENTS))
     resp = await async_client.get(
         SEARCH,
         params={"date": "2025-09-12", "from": "BUE", "to": "PMI"},
@@ -65,9 +61,7 @@ async def test_upstream_500_returns_502(async_client):
 
 @respx.mock
 async def test_upstream_unreachable_returns_503(async_client):
-    respx.get(f"{BASE}/flight-events").mock(
-        side_effect=httpx.ConnectError("refused")
-    )
+    respx.get(f"{BASE}/flight-events").mock(side_effect=httpx.ConnectError("refused"))
     resp = await async_client.get(
         SEARCH,
         params={"date": "2025-09-12", "from": "BUE", "to": "MAD"},
@@ -77,9 +71,7 @@ async def test_upstream_unreachable_returns_503(async_client):
 
 @respx.mock
 async def test_upstream_timeout_returns_503(async_client):
-    respx.get(f"{BASE}/flight-events").mock(
-        side_effect=httpx.TimeoutException("timeout")
-    )
+    respx.get(f"{BASE}/flight-events").mock(side_effect=httpx.TimeoutException("timeout"))
     resp = await async_client.get(
         SEARCH,
         params={"date": "2025-09-12", "from": "BUE", "to": "MAD"},

@@ -17,5 +17,8 @@ ignore = [
     "E501",  # line too long (black lo maneja)
 ]
 
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
 [tool.ruff.format]
 quote-style = "double"

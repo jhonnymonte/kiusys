@@ -1,11 +1,9 @@
 import asyncio
-import json
 
 import httpx
 
 from app.infrastructure.clients.flight_events_client import FlightEventsClient
 from app.infrastructure.logging.logger import setup_logging
-
 
 MOCK_EVENTS = [
     {

@@ -3,7 +3,6 @@ from datetime import datetime, timezone
 from app.domain.entities import FlightEvent, Journey
 from app.schemas.response import JourneyResponse
 
-
 event1 = FlightEvent(
     flight_number="XX1234",
     departure_city="BUE",
