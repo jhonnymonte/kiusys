@@ -17,6 +17,13 @@ MOCK_EVENTS = [
         "departure_datetime": "2025-09-13T02:00:00Z",
         "arrival_datetime": "2025-09-13T03:00:00Z",
     },
+    {
+        "flight_number": "IB0001",
+        "departure_city": "MAD",
+        "arrival_city": "BUE",
+        "departure_datetime": "2021-12-31T23:59:59Z",
+        "arrival_datetime": "2022-01-01T16:00:00Z",
+    },
 ]
 
 

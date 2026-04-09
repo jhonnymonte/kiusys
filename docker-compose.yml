@@ -1,0 +1,19 @@
+services:
+  api:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      FLIGHT_EVENTS_API_URL: http://mock:8001
+      CACHE_TTL_SECONDS: 300
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    depends_on:
+      - mock
+
+  mock:
+    build: .
+    command: uvicorn mock.mock_server:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"

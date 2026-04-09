@@ -45,5 +45,5 @@ class SearchJourneysUseCase:
                 if is_valid_connection(leg1, leg2, destination):
                     journeys.append(Journey(path=[leg1,leg2]))
         
-        logger.info("Seach complete", extra={"results":len(journeys)})
+        logger.info("Search complete", extra={"results":len(journeys)})
         return journeys
